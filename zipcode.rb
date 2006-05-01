@@ -108,23 +108,24 @@ class ZipcodeCGI
    end
 end
 
-begin
-   cgi = CGI.new
-   zipcode_app = ZipcodeCGI.new(cgi, "zipcode.rhtml")
+if $0 == __FILE__
+   begin
+      cgi = CGI.new
+      zipcode_app = ZipcodeCGI.new(cgi, "zipcode.rhtml")
+      if zipcode_app.keyword or zipcode_app.pref
+         zipcode_app.do_search
+      end
 
-   if zipcode_app.keyword or zipcode_app.pref
-      zipcode_app.do_search
+      cgi.out("text/html; charset=EUC-JP"){ zipcode_app.do_eval_rhtml }
+
+   rescue Exception
+      if cgi then
+         print cgi.header( 'type' => 'text/plain' )
+      else
+         print "Content-Type: text/plain\n\n"
+      end
+      puts "#$! (#{$!.class})"
+      puts ""
+      puts $@.join( "\n" )
    end
-
-   cgi.out("text/html; charset=EUC-JP"){ zipcode_app.do_eval_rhtml }
-
-rescue Exception
-   if cgi then
-      print cgi.header( 'type' => 'text/plain' )
-   else
-      print "Content-Type: text/plain\n\n"
-   end
-   puts "#$! (#{$!.class})"
-   puts ""
-   puts $@.join( "\n" )
 end
