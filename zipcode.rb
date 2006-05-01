@@ -7,11 +7,6 @@ $KCODE = "euc"
 require 'jcode'
 require 'cgi'
 begin
-   if File.directory?("/home/etk/lib")
-      ENV["LD_LIBRARY_PATH"] = "/home/etk/lib" 
-      #STDERR.puts ENV["LD_LIBRARY_PATH"]
-      $:.unshift("/home/etk/lib/ruby")
-   end
    require 'sqlite3'
 rescue LoadError
    require 'dbi'
