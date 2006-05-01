@@ -8,9 +8,12 @@ require 'jcode'
 require 'cgi'
 begin
    require 'sqlite3'
+   DBTYPE = SQLite3
 rescue LoadError
    require 'dbi'
+   DBTYPE = DBI
 end
+require "zipcode-db"
 
 begin
    require 'erb'
@@ -52,7 +55,7 @@ class ZipcodeCGI
    # 実際の検索を行う
    def do_search
       #dbh = DBI.connect("dbi:SQLite:zipcode.db")	# For DBI
-      dbh = SQLite3::Database.new("zipcode.db")		# For SQLite3
+      dbh = ZipcodeDB.new(DBTYPE, "zipcode.db")		# For SQLite3
       @result = []
       # @search_time = DBI::Utils.measure do
       @search_time = Time.now
@@ -95,7 +98,7 @@ class ZipcodeCGI
          end
       end
       #sth.finish	# For DBI
-      #dbh.close	# For SQLite3
+      dbh.close		# For SQLite3
       @search_time = Time.now - @search_time
    end
 
