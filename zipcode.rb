@@ -8,11 +8,12 @@ require 'jcode'
 require 'cgi'
 begin
    require 'sqlite3'
-   DBTYPE = SQLite3
+   DBTYPE = SQLite3::Database
 rescue LoadError
    require 'dbi'
    DBTYPE = DBI
 end
+STDERR.puts DBTYPE
 require "zipcode-db"
 
 begin
@@ -77,26 +78,34 @@ class ZipcodeCGI
             sql << "city like ? or town like ?"
             args.push "%#{ @keyword }%", "%#{ @keyword }%"
          end
-         sth = dbh.prepare("select zipcode7, pref, city, town from zipcode where #{sql} order by zipcode7")
+         sth = dbh.prepare("select zipcode7, pref, city, town, city_yomi, town_yomi from zipcode where #{sql} order by zipcode7")
          rows = sth.execute(*args)
          rows.each do |row|
-            zipcode7 = row.shift
-            @result.push(zipcode7.format_zipcode << " " << row.join(" "))
+            zipcode7,pref,city,town,city_yomi,town_yomi = row
+            @result << [ zipcode7.format_zipcode, pref,
+                         %Q(<span title="#{city_yomi}">#{city}</span>),
+                         %Q(<span title="#{town_yomi}">#{town}</span>),
+                       ].join(" ")
          end
       elsif @pref and @city
-         sth = dbh.prepare("select zipcode7, pref, city, town from zipcode where pref = ? and city = ? order by zipcode7")
+         sth = dbh.prepare("select zipcode7, pref, city, town, city_yomi, town_yomi from zipcode where pref = ? and city = ? order by zipcode7")
          rows = sth.execute(@pref, @city)
          rows.each do |row|
-            zipcode7 = row.shift
-            @result.push(zipcode7.format_zipcode << " " << row.join(" "))
+            zipcode7,pref,city,town,city_yomi,town_yomi = row
+            @result << [ zipcode7.format_zipcode, pref,
+                         %Q(<span title="#{city_yomi}">#{city}</span>),
+                         %Q(<span title="#{town_yomi}">#{town}</span>),
+                       ].join(" ")
          end
       elsif @pref
-         sth = dbh.prepare("select distinct city from zipcode where pref = ? order by city_yomi")
+         sth = dbh.prepare("select distinct city, city_yomi from zipcode where pref = ? order by city_yomi")
          rows = sth.execute(@pref)
          rows.each do |row|
-            @result.push "<a href=\"./zipcode.cgi?pref=#{CGI.escape(@pref)};city=#{CGI.escape(row[0])}\">#{h(row[0])}</a>\n"
+            city, city_yomi = row
+            @result << %Q|<a href="./zipcode.cgi?pref=#{CGI.escape(@pref)};city=#{CGI.escape(city)}" title="#{city_yomi}">#{city}</a>\n|
          end
       end
+      sth.close
       #sth.finish	# For DBI
       dbh.close		# For SQLite3
       @search_time = Time.now - @search_time
