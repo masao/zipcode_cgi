@@ -84,7 +84,8 @@ class ZipcodeCGI
             zipcode7,pref,city,town,city_yomi,town_yomi = row
             @result << [ zipcode7.format_zipcode, pref,
                          %Q(<span title="#{city_yomi}">#{city}</span>),
-                         %Q(<span title="#{town_yomi}">#{town}</span>),
+                         town == "以下に掲載がない場合" ?
+                         town : %Q(<span title="#{town_yomi}">#{town}</span>),
                        ].join(" ")
          end
       elsif @pref and @city
@@ -94,7 +95,8 @@ class ZipcodeCGI
             zipcode7,pref,city,town,city_yomi,town_yomi = row
             @result << [ zipcode7.format_zipcode, pref,
                          %Q(<span title="#{city_yomi}">#{city}</span>),
-                         %Q(<span title="#{town_yomi}">#{town}</span>),
+                         town == "以下に掲載がない場合" ?
+                         town : %Q(<span title="#{town_yomi}">#{town}</span>),
                        ].join(" ")
          end
       elsif @pref
