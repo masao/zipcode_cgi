@@ -13,7 +13,7 @@ rescue LoadError
    require 'dbi'
    DBTYPE = DBI
 end
-STDERR.puts DBTYPE
+#STDERR.puts DBTYPE
 require "zipcode-db"
 
 begin
