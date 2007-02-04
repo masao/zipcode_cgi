@@ -1,12 +1,1 @@
-$Id$
-
-□ 郵便番号検索スクリプト（CGIプログラム）
-
-郵便番号を検索するもの。
-
-□ 構成
-
-zipcode.rb
-zipcode-db.rb
-zipcode-mkdb.rb
-zipcode.rhtml
+See <http://masao.jpn.org/software/zipcode_cgi.html>
