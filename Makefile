@@ -1,7 +1,7 @@
 all:
-	@echo make dist
+	@echo type \"make dist\"
 
-DIST_FILES = README zipcode-db.rb zipcode-mkdb.rb zipcode.rb zipcode.rhtml
+DIST_FILES = README AUTHORS zipcode-db.rb zipcode-mkdb.rb zipcode.rb zipcode.rhtml
 NAME = 	zipcode_cgi
 VERSION=0.1
 dist_dir = $(NAME)-$(VERSION)
