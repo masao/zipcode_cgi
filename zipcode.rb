@@ -6,6 +6,7 @@ $KCODE = "euc"
 
 require 'jcode'
 require 'cgi'
+require "rubygems"
 begin
    require 'sqlite3'
    DBTYPE = SQLite3::Database
