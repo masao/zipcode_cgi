@@ -1,12 +1,13 @@
 #!/usr/local/bin/ruby
-# $Id$
+# -*- coding: euc-jp -*-
 #
 # 使い方：
-# nkf -Se ken_all.csv | ruby zipcode.rb
+# nkf -Se ken_all.csv | ruby zipcode-mkdb.rb
 
 # Data from: http://www.post.japanpost.jp/zipcode/download.html
 
 require 'ftools'
+require 'rubygems'
 begin
    $:.unshift(ENV["HOME"] + "/lib/ruby")
    require 'sqlite3'

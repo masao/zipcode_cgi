@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
+# -*- coding: euc-jp -*-
 # -*- Ruby -*-
-# $Id$
 
 $KCODE = "euc"
 
@@ -24,7 +24,7 @@ rescue LoadError
    require 'erb/erbl'
 end
 
-ZIPCODECGI_VERSION = '$Id$'
+ZIPCODECGI_VERSION = '1.9'
 
 class String
    def format_zipcode
