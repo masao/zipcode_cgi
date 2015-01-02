@@ -1,10 +1,14 @@
 #!/usr/bin/env ruby
-# -*- coding: euc-jp -*-
+# -*- coding: utf-8 -*-
 # -*- Ruby -*-
 
-$KCODE = "euc"
+$KCODE = "utf8"
 
-require 'jcode'
+begin
+   require 'jcode'
+rescue LoadError
+end
+
 require 'cgi'
 require "rubygems"
 begin
@@ -15,7 +19,7 @@ rescue LoadError
    DBTYPE = DBI
 end
 #STDERR.puts DBTYPE
-require "zipcode-db"
+require "./zipcode-db"
 
 begin
    require 'erb'
@@ -24,15 +28,17 @@ rescue LoadError
    require 'erb/erbl'
 end
 
-ZIPCODECGI_VERSION = '1.9'
+Encoding.default_external = "utf-8" if defined? Encoding
+
+ZIPCODECGI_VERSION = '2.0'
 
 class String
    def format_zipcode
       self.sub(/^(\d\d\d)(\d?\d?\d?\d?)$/) {
 	 if $2.size == 4
-	    "¢©" << $1 << "-" << $2
+	    "„Äí" << $1 << "-" << $2
 	 else
-	    "¢©" << $1
+	    "„Äí" << $1
 	 end
       }
    end
@@ -54,7 +60,7 @@ class ZipcodeCGI
       @city = @cgi.params['city'][0] if @cgi.valid?( 'city' )
    end
 
-   # º¬∫›§Œ∏°∫˜§Úπ‘§¶
+   # ÂÆüÈöõ„ÅÆÊ§úÁ¥¢„ÇíË°å„ÅÜ
    def do_search
       #dbh = DBI.connect("dbi:SQLite:zipcode.db")	# For DBI
       dbh = ZipcodeDB.new(DBTYPE, "zipcode.db")		# For SQLite3
@@ -68,11 +74,11 @@ class ZipcodeCGI
          when /^[0-9\-]+$/
             sql << "zipcode7 like ?"
             args << "#{ @keyword.delete("-") }%"
-         when /^[§°-§Û]+$/
-            keyword_yomi = @keyword.tr('§°-§Û', '•°-•Û')
+         when /^[„ÅÅ-„Çì]+$/
+            keyword_yomi = @keyword.tr('„ÅÅ-„Çì', '„Ç°-„É≥')
             sql << "city_yomi like ? or town_yomi like ?"
             args.push "%#{ keyword_yomi }%", "%#{ keyword_yomi }%"
-         when /^[•°-•Û]+$/
+         when /^[„Ç°-„É≥]+$/
             sql << "city_yomi like ? or town_yomi like ?"
             args.push "%#{ @keyword }%", "%#{ @keyword }%"
          else
@@ -85,7 +91,7 @@ class ZipcodeCGI
             zipcode7,pref,city,town,city_yomi,town_yomi = row
             @result << [ zipcode7.format_zipcode, pref,
                          %Q(<span title="#{city_yomi}">#{city}</span>),
-                         town == "∞ ≤º§À∑«∫‹§¨§ §§æÏπÁ" ?
+                         town == "‰ª•‰∏ã„Å´Êé≤Ëºâ„Åå„Å™„ÅÑÂ†¥Âêà" ?
                          town : %Q(<span title="#{town_yomi}">#{town}</span>),
                        ].join(" ")
          end
@@ -96,7 +102,7 @@ class ZipcodeCGI
             zipcode7,pref,city,town,city_yomi,town_yomi = row
             @result << [ zipcode7.format_zipcode, pref,
                          %Q(<span title="#{city_yomi}">#{city}</span>),
-                         town == "∞ ≤º§À∑«∫‹§¨§ §§æÏπÁ" ?
+                         town == "‰ª•‰∏ã„Å´Êé≤Ëºâ„Åå„Å™„ÅÑÂ†¥Âêà" ?
                          town : %Q(<span title="#{town_yomi}">#{town}</span>),
                        ].join(" ")
          end
@@ -128,7 +134,7 @@ if $0 == __FILE__
          zipcode_app.do_search
       end
 
-      cgi.out("text/html; charset=EUC-JP"){ zipcode_app.do_eval_rhtml }
+      cgi.out("text/html; charset=utf-8"){ zipcode_app.do_eval_rhtml }
 
    rescue Exception
       if cgi then

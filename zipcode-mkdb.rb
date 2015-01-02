@@ -1,12 +1,12 @@
 #!/usr/local/bin/ruby
-# -*- coding: euc-jp -*-
+# -*- coding: utf-8 -*-
 #
-# ª»§§ ˝°ß
+# ‰Ωø„ÅÑÊñπÔºö
 # nkf -Se ken_all.csv | ruby zipcode-mkdb.rb
 
 # Data from: http://www.post.japanpost.jp/zipcode/download.html
 
-require 'ftools'
+require 'fileutils'
 require 'rubygems'
 begin
    $:.unshift(ENV["HOME"] + "/lib/ruby")
@@ -15,9 +15,11 @@ rescue LoadError
    require 'dbi'
 end
 
+Encoding.default_external = "utf-8" if defined? Encoding
+
 DBNAME = "zipcode.db"
 DBNAME_TMP = DBNAME + ".tmp"
-File.rm_f(DBNAME_TMP) if FileTest.exist? DBNAME_TMP
+FileUtils.rm_f(DBNAME_TMP) if FileTest.exist? DBNAME_TMP
 
 CREATE_TABLE = <<EOF
 CREATE TABLE zipcode (
@@ -31,7 +33,7 @@ CREATE TABLE zipcode (
 EOF
 
 if FileTest.exist? DBNAME
-   File.cp(DBNAME, DBNAME + ".old", true)
+   FileUtils.cp(DBNAME, DBNAME + ".old")
 end
 
 #dbh = DBI.connect("dbi:SQLite:#{DBNAME_TMP}")	# For DBI
@@ -51,4 +53,4 @@ dbh.transaction do
    logfile.close
 end
 
-File.mv(DBNAME_TMP, DBNAME, true)
+FileUtils.mv(DBNAME_TMP, DBNAME)
