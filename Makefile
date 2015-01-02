@@ -3,7 +3,7 @@ all:
 
 DIST_FILES = README AUTHORS zipcode-db.rb zipcode-mkdb.rb zipcode.rb zipcode.rhtml
 NAME = 	zipcode_cgi
-VERSION=0.1
+VERSION=$(shell ruby -r./zipcode -e "print ZIPCODECGI_VERSION")
 dist_dir = $(NAME)-$(VERSION)
 
 dist:
